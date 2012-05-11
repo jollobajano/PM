@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<jbossesb parameterReloadSecs="5"
+ xmlns="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://anonsvn.labs.jboss.com/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd http://anonsvn.jboss.org/repos/labs/labs/jbossesb/trunk/product/etc/schemas/xml/jbossesb-1.0.1.xsd">
+ <providers>
+  <jms-provider connection-factory="ConnectionFactory"
+   jndi-URL="jnp://127.0.0.1:1099"
+   jndi-context-factory="org.jnp.interfaces.NamingContextFactory"
+   jndi-pkg-prefix="org.jboss.naming:org.jnp.interfaces" name="JBossMQ">
+   <jms-bus busid="quickstartEsbChannel">
+    <jms-message-filter
+     dest-name="queue/quickstart_helloworld_mail_Request_esb" dest-type="QUEUE"/>
+   </jms-bus>
+  </jms-provider>
+  <schedule-provider name="checkexpiringScheduleProvider">
+   <cron-schedule cronExpression="0 */5 * * * ?" scheduleid="checkexpiring-trigger"/>
+  </schedule-provider>
+ </providers>
+ <services>
+  <service category="PM" description="Incomming mails" name="Incomming">
+   <listeners>
+    <jca-gateway adapter="pm-esb-pm.dialysen.se.esb#mail-ra.rar"
+     endpointClass="jollobajano.pm.esb.MailEndpoint" is-gateway="true"
+     name="Mail-JCA-Gateway" transacted="false">
+     <activation-config>
+      <property name="mailServer" value="mail.dialysen.se"/>
+      <property name="storeProtocol" value="pop3"/>
+      <property name="mailFolder" value="INBOX"/>
+      <property name="userName" value="pm@dialysen.se"/>
+      <property name="password" value="mandelmasse"/>
+      <property name="pollingInterval" value="30000"/>
+      <property name="port" value="110"/>
+     </activation-config>
+    </jca-gateway>
+    <jms-listener busidref="quickstartEsbChannel" maxThreads="1" name="JMS-ESBListener"/>
+   </listeners>
+   <actions mep="OneWay">
+    <action class="jollobajano.pm.esb.AuthenticationAction" name="authentication">
+     <property name="userNameSource" value="MailFrom"/>
+    </action>
+    <action class="jollobajano.pm.esb.SaveContent" name="saveContent">
+     <property name="dir" value="/dev/shm"/>
+    </action>
+    <action class="jollobajano.pm.esb.Doc2OdtAction" name="doc2odt"/>
+    <!--     <action class="jollobajano.pm.esb.ConverterAction" name="doc2odt"> 
+      <property name="convert-to-suffix" value="odt"/> 
+      <property name="messagename-from-filepath" value="DocFilePath"/> 
+      <property name="messagename-to-filepath" value="OdtFilePath"/>
+      <property name="deleteFile" value="false"/> 
+     </action> -->
+    <action class="jollobajano.pm.esb.XSLTAction" name="xslt1">
+     <property name="xsl" value="prepareOdt.xsl"/>
+     <property name="fileNameHeader" value="OdtFilePath"/>
+    </action>
+    <action class="jollobajano.pm.esb.Odt2PdfAction" name="odt2pdf">
+     <property name="dir" value="/dev/shm"/>
+    </action>
+    <!--     <action class="jollobajano.pm.esb.ConverterAction" name="odt2pdf"> 
+      <property name="convert-to-suffix" value="pdf"/> 
+      <property name="messagename-from-filepath" value="OdtFilePath"/> 
+      <property name="messagename-to-filepath" value="PdfFilePath"/> 
+      <property name="delete-file-on-success" value="true"/> 
+     </action> -->
+    <action class="jollobajano.pm.esb.XSLTAction" name="xslt2">
+     <property name="xsl" value="headers.xsl"/>
+    </action>
+    <action class="org.jboss.soa.esb.smooks.SmooksAction" name="smooks">
+     <property name="smooksConfig" value="smooks-document.xml"/>
+     <property name="resultType" value="JAVA"/>
+     <property name="javaResultBeanId" value="document"/>
+    </action>
+    <!--  
+    <action class="jollobajano.pm.esb.RenameFilesAction" name="rename">
+    </action>
+    -->
+    <action class="jollobajano.pm.esb.PersistDocumentInfo" name="persist"/>
+    <action class="jollobajano.pm.esb.SendReplyAction" name="sendReply">
+     <property name="template" value="mail/submitted.ftl"/>
+     <property name="attachementBuilderClass" value="jollobajano.pm.esb.PdfAttachementBuilder"/>
+     <property name="subject" value="[PM] &quot;${documentinfo.title}&quot; registrerat"/>
+    </action>
+   </actions>
+  </service>
+  <service category="PM" description="Check database for expiring PMs" name="CheckDates">
+   <listeners>
+    <scheduled-listener
+     event-processor="jollobajano.pm.esb.DatabasePoller"
+     name="my_scheduled_listener" scheduleidref="checkexpiring-trigger">
+     <property name="expiredService" value="PM:Expired"/>
+     <property name="expiringService" value="PM:Expiring"/>
+     <property name="margin" value="21"/>
+    </scheduled-listener>
+   </listeners>
+  </service>
+  <service category="PM"
+   description="Send mail to notify about an upcomming expiration date."
+   invmScope="GLOBAL" name="Expiring">
+   <actions mep="OneWay">
+    <action class="jollobajano.pm.esb.SendReplyAction" name="sendReply">
+     <property name="template" value="mail/expiring.ftl"/>
+     <property name="attachementBuilderClass" value="jollobajano.pm.esb.DocAttachementBuilder"/>
+     <property name="subject" value="[PM] Giltighetstidem för &quot;${documentinfo.title}&quot; håller på att gå ut"/>
+    </action>
+    <action class="jollobajano.pm.esb.MarkDocumentInfo" name="postmarkExpiring">
+     <property name="state" value="EXPIRING_NOTIFIED"/>
+    </action>
+   </actions>
+  </service>
+  <service category="PM"
+   description="Send mail to notify about an expired document."
+   invmScope="GLOBAL" name="Expired">
+   <actions mep="OneWay">
+    <action class="jollobajano.pm.esb.SendReplyAction" name="sendReply">
+     <property name="template" value="mail/expired.ftl"/>
+     <property name="attachementBuilderClass" value="jollobajano.pm.esb.DocAttachementBuilder"/>
+     <property name="subject" value="[PM] Giltighetstidem för &quot;${documentinfo.title}&quot; har gått ut"/>
+    </action>
+    <action class="jollobajano.pm.esb.MarkDocumentInfo" name="postmarkExpired">
+     <property name="state" value="EXPIRED_NOTIFIED"/>
+    </action>
+   </actions>
+  </service>
+ </services>
+</jbossesb>

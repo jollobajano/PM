@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<smooks-resource-list xmlns="http://www.milyn.org/xsd/smooks-1.1.xsd"
+	xmlns:jb="http://www.milyn.org/xsd/smooks/javabean-1.2.xsd">
+
+
+	<jb:bean beanId="document" class="jollobajano.pm.model.DocumentInfo"
+		createOnElement="documentinfo">
+
+		<jb:value property="audience" data="documentinfo/item[1]/@value" />
+		<jb:value property="created" data="documentinfo/item[2]/@value" decoder="SqlDate">
+			<jb:decodeParam name="format">yyyy-MM-dd</jb:decodeParam>
+			<jb:decodeParam name="locale-language">sv</jb:decodeParam>
+			<jb:decodeParam name="locale-country">SE</jb:decodeParam>
+		</jb:value>
+		<jb:value property="updated" data="documentinfo/item[3]/@value" decoder="SqlDate">
+			<jb:decodeParam name="format">yyyy-MM-dd</jb:decodeParam>
+			<jb:decodeParam name="locale-language">sv</jb:decodeParam>
+			<jb:decodeParam name="locale-country">SE</jb:decodeParam>
+		</jb:value>
+		<jb:value property="expires" data="documentinfo/item[4]/@value"  decoder="SqlDate">
+			<jb:decodeParam name="format">yyyy-MM-dd</jb:decodeParam>
+			<jb:decodeParam name="locale-language">sv</jb:decodeParam>
+			<jb:decodeParam name="locale-country">SE</jb:decodeParam>
+		</jb:value>
+		<jb:value property="title" data="documentinfo/item[5]/@value" />
+		<jb:value property="type" data="documentinfo/item[6]/@value" />
+		<jb:value property="chapter" data="documentinfo/item[7]/@value" />
+		<jb:value property="page" data="documentinfo/item[8]/@value" />
+		<jb:value property="author" data="documentinfo/item[9]/@value" />
+		<jb:value property="supervisor" data="documentinfo/item[10]/@value" />
+
+	</jb:bean>
+
+
+</smooks-resource-list>

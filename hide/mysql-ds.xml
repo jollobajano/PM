@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See http://www.jboss.org/community/wiki/Multiple1PC for information 
+	about local-tx-datasource -->
+<!-- $Id: mysql-ds.xml 97536 2009-12-08 14:05:07Z jesper.pedersen $ -->
+<!-- Datasource config for MySQL using 3.0.9 available from: http://www.mysql.com/downloads/api-jdbc-stable.html -->
+
+<datasources>
+	<xa-datasource>
+		<jndi-name>PMDS</jndi-name>
+		<track-connection-by-tx>true</track-connection-by-tx>
+		<xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource
+		</xa-datasource-class>
+		<xa-datasource-property name="ServerName">localhost
+		</xa-datasource-property>
+		<xa-datasource-property name="DatabaseName">pmdatabase
+		</xa-datasource-property>
+		<xa-datasource-property name="User">mats
+		</xa-datasource-property>
+		<xa-datasource-property name="Password">frukost
+		</xa-datasource-property>
+	</xa-datasource>
+
+</datasources>
+

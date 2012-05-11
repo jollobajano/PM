@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Struts2_Annotations_Mvn</display-name>
+
+	<!-- Filters -->
+	<filter>
+		<filter-name>action2-cleanup</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.ActionContextCleanUp</filter-class>
+	</filter>
+	<filter>
+		<filter-name>sitemesh</filter-name>
+		<filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>action2</filter-name>
+		<filter-class>org.apache.struts2.dispatcher.FilterDispatcher</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>action2-cleanup</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>sitemesh</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>action2</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<description>
+  	</description>
+		<display-name>DocumentRelay</display-name>
+		<servlet-name>DocumentRelay</servlet-name>
+		<servlet-class>jollobajano.pm.servlet.DocumentRelay</servlet-class>
+	</servlet>
+	<servlet>
+		<description>
+		</description>
+		<display-name>Logout</display-name>
+		<servlet-name>Logout</servlet-name>
+		<servlet-class>jollobajano.pm.servlet.Logout</servlet-class>
+		<init-param>
+			<description>
+			where to land after log out</description>
+			<param-name>redirect</param-name>
+			<param-value>/index.html</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentRelay</servlet-name>
+		<url-pattern>/DocumentRelay/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>Logout</servlet-name>
+		<url-pattern>/Logout.html</url-pattern>
+	</servlet-mapping>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>All resources</web-resource-name>
+			<description>Protects all resources</description>
+			<url-pattern>/documents</url-pattern>
+			<url-pattern>/settings</url-pattern>
+			<url-pattern>*.action</url-pattern>
+			<url-pattern>/DocumentRelay/*</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>pmansvariga</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-role>
+		<role-name>pmansvariga</role-name>
+	</security-role>
+
+	<login-config>
+		<auth-method>FORM</auth-method>
+		<form-login-config>
+			<form-login-page>/login.jsp</form-login-page>
+			<form-error-page>/login.jsp?failed=true</form-error-page>
+		</form-login-config>
+	</login-config>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+</web-app>

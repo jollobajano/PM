@@ -1,0 +1,5 @@
+<jboss-web>
+    <context-root>/</context-root>
+    <virtual-host>marvel</virtual-host>
+	<security-domain>java:/jaas/localLDAP</security-domain>
+</jboss-web>

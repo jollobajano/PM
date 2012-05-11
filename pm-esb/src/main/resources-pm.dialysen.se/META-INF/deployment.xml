@@ -1,0 +1,16 @@
+<jbossesb-deployment>
+	<depends>jboss.jca:name='pm-esb-pm.dialysen.se.esb#mail-ra.rar',service=RARDeployment
+	</depends>
+	<depends>jboss.esb.quickstart.destination:service=Queue,name=quickstart_helloworld_mail_Request_esb
+	</depends>
+
+	<!--  
+	<loader-repository>
+		com.example.domain:artifact=PMClassLoader
+		<loader-repository-config>
+			java2ParentDelegaton=false
+		</loader-repository-config>
+	</loader-repository>
+	-->
+
+</jbossesb-deployment>

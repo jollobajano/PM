@@ -1,0 +1,13 @@
+<project name="MyProject" default="package" basedir=".">
+	<description>
+        simple example build file
+    </description>
+	<!-- set global properties for this build -->
+	<property name="src" location="src/main/java" />
+	<property name="build" value="${project.build.directory}" />
+
+	<target name="package" description="">
+	</target>
+</project>
+
+

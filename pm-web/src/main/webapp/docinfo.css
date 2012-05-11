@@ -1,0 +1,38 @@
+#doclist {
+	font-size: 9pt;
+	width: 100%;
+    color: #033;
+}
+
+/*
+div.docinfo {
+	-moz-box-shadow: 5px 5px 5px #aaa;
+	-webkit-box-shadow: 5px 5px 5px #aaa;
+	box-shadow: 5px 5px 5px #aaa;
+	background-color: #fbf5ff;
+	margin-bottom: 15px;
+	padding: 4px;
+	opacity:0.85;
+}
+*/
+
+div.cell:first-child {
+	width: 400px;
+}
+
+div.cell:last-child {
+	text-align: right;
+	width: 60px;
+	float: none;
+}
+
+div.cell {
+	width: 120px;
+	float: left;
+	margin: 4px;
+}
+
+div.cellcontents {
+	font-weight: bold;
+	font-size: 11pt;
+}

@@ -1,0 +1,305 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>jollobajano</groupId>
+		<artifactId>pm</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<groupId>jollobajano</groupId>
+	<artifactId>pm-esb</artifactId>
+	<packaging>jar</packaging>
+	<version>${project.parent.version}</version>
+	<name>PM ESB Application</name>
+
+	<properties>
+	</properties>
+	<repositories>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss
+			</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<directory>${project.basedir}/target</directory>
+				<finalName>pm-esb</finalName>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+					</resource>
+					<resource>
+						<directory>src/main/resources-dev</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<build>
+				<directory>${project.basedir}/target-pm.dialysen.se</directory>
+				<finalName>pm-esb-pm.dialysen.se</finalName>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+					</resource>
+					<resource>
+						<directory>src/main/resources-pm.dialysen.se</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeGroupIds>jollobajano,mysql</includeGroupIds>
+							<artifactItems>
+								<artifactItem>
+									<groupId>jollobajano</groupId>
+									<artifactId>pm-web</artifactId>
+									<type>war</type>
+									<version>${project.parent.version}</version>
+								</artifactItem>
+                                                                <artifactItem>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.19</version>
+                                                                </artifactItem>
+								<artifactItem>
+									<groupId>jollobajano</groupId>
+									<artifactId>pm-data</artifactId>
+									<type>jar</type>
+									<version>${project.parent.version}</version>
+								</artifactItem>
+							</artifactItems>
+							<!-- <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version} -->
+							<outputDirectory>${project.build.directory}/classes
+							</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>1</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<jar destfile="${project.build.directory}/${project.build.finalName}.esb"
+									basedir="${project.build.directory}/classes" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jboss-packaging-maven-plugin</artifactId> 
+				<version>2.1.1</version> <extensions>true</extensions> <configuration> <archiveName>${finalName}</archiveName> 
+				<libDirectory>${project.build.directory}/${project.build.finalName} </libDirectory> 
+				</configuration> <executions> <execution> <id>build-esb</id> <goals> <goal>esb</goal> 
+				</goals> </execution> </executions> </plugin> -->
+			<plugin>
+				<groupId>org.jboss.as.plugins</groupId>
+				<artifactId>jboss-as-maven-plugin</artifactId>
+				<version>7.1.0.CR1</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>jollobajano</groupId>
+			<artifactId>pm-data</artifactId>
+			<version>${project.parent.version}</version>
+			<type>jar</type>
+		</dependency>
+
+
+		<dependency>
+			<groupId>jollobajano</groupId>
+			<artifactId>pm-web</artifactId>
+			<type>war</type>
+			<version>${project.parent.version}</version>
+		</dependency>
+
+
+		<!-- Dwr -->
+		<dependency>
+			<groupId>uk.ltd.getahead</groupId>
+			<artifactId>dwr</artifactId>
+			<version>1.1-beta-3</version>
+		</dependency>
+
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>3.6.0.Final</version>
+			<scope>system</scope>
+			<systemPath>${hibernate.core}</systemPath>
+			<optional>false</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.4.0.GA</version>
+			<scope>system</scope>
+			<systemPath>${hibernate.entitymanager}</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>3.4.0.GA</version>
+			<scope>system</scope>
+			<systemPath>${hibernate.annotations}</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>3.4.0.GA</version>
+			<scope>system</scope>
+			<systemPath>${hibernate.jpa}</systemPath>
+		</dependency>
+
+
+		<!-- Hypersonic HSQLDB -->
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb-j5</artifactId>
+			<version>2.2.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- PostgreSQL -->
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.0-801.jdbc3</version>
+		</dependency>
+
+		<!-- MySQL -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.19</version>
+		</dependency>
+
+
+		<!-- JBoss -->
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jboss-as-connector-mail-ra</artifactId>
+			<version>6.1.0.Final</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>mail-ra</artifactId>
+			<version>6.1.0.Final</version>
+			<type>rar</type>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.soa.bpel.dependencies.esb</groupId>
+			<artifactId>jbossesb-rosetta</artifactId>
+			<version>4.11</version>
+			<type>jar</type>
+			<scope>system</scope>
+			<systemPath>${hibernate.rosetta}</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Open Office -->
+		<dependency>
+			<groupId>org.openoffice</groupId>
+			<artifactId>juh</artifactId>
+			<version>3.2.1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openoffice</groupId>
+			<artifactId>jurt</artifactId>
+			<version>3.2.1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openoffice</groupId>
+			<artifactId>ridl</artifactId>
+			<version>3.2.1</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.openoffice</groupId>
+			<artifactId>unoil</artifactId>
+			<version>3.2.1</version>
+			<type>jar</type>
+		</dependency>
+
+		<!-- Commons BeanUtils -->
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils-core</artifactId>
+			<version>1.8.3</version>
+		</dependency>
+
+		<!-- Java Mail -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Free Marker -->
+		<dependency>
+			<groupId>freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.8</version>
+			<optional>false</optional>
+		</dependency>
+	</dependencies>
+</project>
