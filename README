@@ -1,0 +1,17 @@
+A PM handling system for the dialysis department at 
+Lund University Hospital.
+
+It is built around the JBoss ESB.
+
+It maps the current work model of the department 
+which unfortunately utilises MS Word documents.
+
+1. Word documents are edited
+2. Then mailed in (currently to the dept. secretary)
+3. Which publishes PDFs onto a shared fileserver directory
+4. Document expiratio dates are taken into account
+4a. When expiration is close a notification mai is sent
+4b. When document expires notification mai is sent
+
+Notification mails have the expiring document attached.
+
