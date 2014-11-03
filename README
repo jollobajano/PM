@@ -15,3 +15,13 @@ which unfortunately utilises MS Word documents.
 
 Notification mails have the expiring document attached.
 
+The application also provides a web site for administration 
+and document download.
+
+
+Had it been deployed there are numbers of development I'd like to see:
+
+ * On-line editing, getting rid of the Word dependency
+ 
+ * Forum for PM discussion.
+ 
